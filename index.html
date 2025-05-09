@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>محاسبه بیلیارد</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 2rem; direction: rtl; }
+    input, button { padding: 10px; font-size: 1.2em; margin: 5px; }
+    .history { margin-top: 20px; text-align: right; max-width: 400px; margin-inline: auto; }
+  </style>
+</head>
+<body>
+  <h1>محاسبه ساعت بیلیارد</h1>
+  <p>هر ساعت: ۱۷۰,۰۰۰ تومان</p>
+  <input type="number" id="costInput" placeholder="مبلغ پرداخت‌شده (تومان)" />
+  <button onclick="calculate()">محاسبه</button>
+  <div id="result"></div>
+  <div class="history">
+    <h2>تاریخچه:</h2>
+    <ul id="historyList"></ul>
+  </div>
+
+  <script>
+    const pricePerHour = 170000;
+    const resultDiv = document.getElementById("result");
+    const historyList = document.getElementById("historyList");
+
+    function calculate() {
+      const cost = parseInt(document.getElementById("costInput").value);
+      if (isNaN(cost)) return;
+      const hours = cost / pricePerHour;
+      const msg = `مدت زمان بازی: ${hours.toFixed(2)} ساعت`;
+
+      resultDiv.textContent = msg;
+      saveToHistory(cost, msg);
+      renderHistory();
+    }
+
+    function saveToHistory(cost, msg) {
+      let history = JSON.parse(localStorage.getItem("billiardHistory") || "[]");
+      history.unshift({ cost, msg, time: new Date().toLocaleString("fa-IR") });
+      history = history.slice(0, 10); // فقط ۱۰ مورد آخر
+      localStorage.setItem("billiardHistory", JSON.stringify(history));
+    }
+
+    function renderHistory() {
+      const history = JSON.parse(localStorage.getItem("billiardHistory") || "[]");
+      historyList.innerHTML = "";
+      for (const item of history) {
+        const li = document.createElement("li");
+        li.textContent = `[${item.time}] پرداخت: ${item.cost} → ${item.msg}`;
+        historyList.appendChild(li);
+      }
+    }
+
+    renderHistory();
+  </script>
+</body>
+</html>
