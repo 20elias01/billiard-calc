@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>محاسبه هزینه بیلیارد</title>
+    <title>محاسبه هزینه و زمان بیلیارد</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -80,7 +80,9 @@
                 // اگر مبلغ وارد شد ولی زمان وارد نشد، تایم رو محاسبه کن
                 time = amount / rate;
                 document.getElementById("time").value = time.toFixed(2);
-                result.innerHTML = `زمان بازی شما: ${time.toFixed(2)} ساعت`;
+                let hours = Math.floor(time); // تعداد ساعت‌ها
+                let minutes = Math.round((time - hours) * 60); // تبدیل باقی‌مانده به دقیقه
+                result.innerHTML = `زمان بازی شما: ${hours} ساعت و ${minutes} دقیقه`;
             } else if (time && !amount) {
                 // اگر زمان وارد شد ولی مبلغ وارد نشد، مبلغ رو محاسبه کن
                 amount = time * rate;
