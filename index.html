@@ -1,60 +1,95 @@
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>محاسبه بیلیارد</title>
-  <style>
-    body { font-family: sans-serif; text-align: center; padding: 2rem; direction: rtl; }
-    input, button { padding: 10px; font-size: 1.2em; margin: 5px; }
-    .history { margin-top: 20px; text-align: right; max-width: 400px; margin-inline: auto; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محاسبه هزینه بیلیارد</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            direction: rtl;
+            padding: 20px;
+            background-color: #f7f7f7;
+        }
+        h1 {
+            text-align: center;
+        }
+        .container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-top: 20px;
+        }
+        label {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            display: block;
+        }
+        input {
+            padding: 10px;
+            width: 100%;
+            font-size: 1em;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            font-size: 1.5em;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-  <h1>محاسبه ساعت بیلیارد</h1>
-  <p>هر ساعت: ۱۷۰,۰۰۰ تومان</p>
-  <input type="number" id="costInput" placeholder="مبلغ پرداخت‌شده (تومان)" />
-  <button onclick="calculate()">محاسبه</button>
-  <div id="result"></div>
-  <div class="history">
-    <h2>تاریخچه:</h2>
-    <ul id="historyList"></ul>
-  </div>
+    <h1>محاسبه هزینه و زمان بیلیارد</h1>
+    <div class="container">
+        <label for="rate">نرخ ساعتی (تومان):</label>
+        <input type="number" id="rate" placeholder="نرخ ساعتی رو وارد کن" value="170">
+        
+        <label for="amount">مبلغ پرداختی (تومان):</label>
+        <input type="number" id="amount" placeholder="مبلغ پرداختی رو وارد کن" />
 
-  <script>
-    const pricePerHour = 170000;
-    const resultDiv = document.getElementById("result");
-    const historyList = document.getElementById("historyList");
+        <label for="time">زمان بازی (ساعت):</label>
+        <input type="number" id="time" placeholder="زمان بازی رو وارد کن" disabled />
 
-    function calculate() {
-      const cost = parseInt(document.getElementById("costInput").value);
-      if (isNaN(cost)) return;
-      const hours = cost / pricePerHour;
-      const msg = `مدت زمان بازی: ${hours.toFixed(2)} ساعت`;
+        <button onclick="calculate()">محاسبه</button>
+        
+        <div class="result" id="result"></div>
+    </div>
 
-      resultDiv.textContent = msg;
-      saveToHistory(cost, msg);
-      renderHistory();
-    }
+    <script>
+        function calculate() {
+            let rate = parseFloat(document.getElementById("rate").value);
+            let amount = parseFloat(document.getElementById("amount").value);
+            let time = parseFloat(document.getElementById("time").value);
+            let result = document.getElementById("result");
 
-    function saveToHistory(cost, msg) {
-      let history = JSON.parse(localStorage.getItem("billiardHistory") || "[]");
-      history.unshift({ cost, msg, time: new Date().toLocaleString("fa-IR") });
-      history = history.slice(0, 10); // فقط ۱۰ مورد آخر
-      localStorage.setItem("billiardHistory", JSON.stringify(history));
-    }
-
-    function renderHistory() {
-      const history = JSON.parse(localStorage.getItem("billiardHistory") || "[]");
-      historyList.innerHTML = "";
-      for (const item of history) {
-        const li = document.createElement("li");
-        li.textContent = `[${item.time}] پرداخت: ${item.cost} → ${item.msg}`;
-        historyList.appendChild(li);
-      }
-    }
-
-    renderHistory();
-  </script>
+            if (amount && !time) {
+                // اگر مبلغ وارد شد ولی زمان وارد نشد، تایم رو محاسبه کن
+                time = amount / rate;
+                document.getElementById("time").value = time.toFixed(2);
+                result.innerHTML = `زمان بازی شما: ${time.toFixed(2)} ساعت`;
+            } else if (time && !amount) {
+                // اگر زمان وارد شد ولی مبلغ وارد نشد، مبلغ رو محاسبه کن
+                amount = time * rate;
+                document.getElementById("amount").value = amount.toFixed(2);
+                result.innerHTML = `مبلغ پرداختی شما: ${amount.toFixed(2)} تومان`;
+            } else {
+                result.innerHTML = "لطفاً یکی از فیلدها را وارد کنید.";
+            }
+        }
+    </script>
 </body>
 </html>
